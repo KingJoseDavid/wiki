@@ -21,17 +21,21 @@ def entry(request, title):
         "content": markdown2.markdown(content)
     })
 
-def search(request, title):
+def search(request):
+    query = request.GET.get("q", "")
     entries = util.list_entries()
-    results = [entry for entry in entries if title.lower() in title.lower()]
+
+    if query in entries:
+        return entry(request, query)
+
+    results = [entry for entry in entries if query.lower() in entry.lower()]
 
     if not results:
         return render(request, "encyclopedia/error.html", {
             "message": "No results found."
         })
 
-    return render(request, "encyclopedia/entry.html", {
-        "title": title,
-        "content": markdown2.markdown(content)
+    return render(request, "encyclopedia/search.html", {
+        "result": results
     })
 
